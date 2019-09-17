@@ -105,6 +105,18 @@ router.patch('/extend/patch', function (req, res) {
   })
 })
 
+router.get('/interceptor/get', function (req, res) {
+  res.end('hello')
+})
+
+
+// 默认配置
+router.post('/config/post', function (req, res) {
+  res.json({
+    msg: `hello world`
+  })
+})
+
 
 
 app.use(router)

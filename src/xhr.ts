@@ -15,7 +15,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       request.timeout = timeout
     }
 
-    request.open(method.toUpperCase(), url, true)
+    request.open(method.toUpperCase(), url!, true)
 
     request.onreadystatechange = function handleLoad() {
       if (request.readyState !== 4) {
@@ -27,6 +27,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       }
 
       const responseHeaders = parseHeaders(request.getAllResponseHeaders())
+
       const responseData =
         responseType && responseType !== 'text' ? request.response : request.responseText
 

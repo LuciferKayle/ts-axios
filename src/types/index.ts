@@ -1,3 +1,4 @@
+import { transformRequest, transformResponse } from '../helpers/data'
 // Axios 方法
 export interface Axios {
   request<T = any>(config: AxiosRequestConfig): AxiosPromise<T>
@@ -15,14 +16,23 @@ export interface AxiosInstance extends Axios {
   <T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
 }
 
+//  扩展静态方法实例
+export interface AxiosStatic extends AxiosInstance {
+  create(config: AxiosRequestConfig): AxiosInstance
+}
+
+// 请求配置项
 export interface AxiosRequestConfig {
-  url: string
+  url?: string
   method?: typeMethod
   data?: any
   params?: any
   headers?: any
   responseType?: XMLHttpRequestResponseType
   timeout?: number
+  [propName: string]: any
+  transformRequest?: AxiosTransformer | AxiosTransformer[]
+  transformResponse?: AxiosTransformer | AxiosTransformer[]
 }
 
 export interface AxiosResponse<T = any> {
@@ -42,6 +52,24 @@ export interface AxiosError extends Error {
   request?: any
   response?: AxiosResponse
   isAxiosError: boolean
+}
+
+export interface AxiosInterceptorManager<T> {
+  use(resolve: ResolveFn<T>, rejectd?: RejectedFn): number
+  eject(id: number): void
+}
+
+export interface ResolveFn<T = any> {
+  (val: T): T | Promise<T>
+}
+
+export interface RejectedFn {
+  (error: any): any
+}
+
+// 请求响应配置
+export interface AxiosTransformer {
+  (data: any, header?: any): any
 }
 
 export type typeMethod =
