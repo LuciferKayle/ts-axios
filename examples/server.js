@@ -4,6 +4,8 @@ const webpack = require('webpack')
 const webpackDevMiddleware = require('webpack-dev-middleware')
 const webpackHotMiddleware = require('webpack-hot-middleware')
 const WebpackConfig = require('./webpack.config')
+const multipart = require('connect-multiparty');
+const path = require('path');
 
 const app = express()
 const compiler = webpack(WebpackConfig)
@@ -16,7 +18,22 @@ app.use(webpackDevMiddleware(compiler, {
   }
 }))
 
+
+app.use(multipart({
+  uploadDir: path.resolve(__dirname, 'upload-file')
+}))
+
+
 const router = express.Router()
+
+
+const cors = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Credentials': true,
+  'Access-Control-Allow-Methods': 'POST, GET, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type'
+}
+
 
 router.get('/simple/get', function (req, res) {
   res.json({
@@ -118,13 +135,42 @@ router.post('/config/post', function (req, res) {
 })
 
 
+// 取消功能
+router.post('/cancel/post', function (req, res) {
+  res.json({
+    msg: `hello world`
+  })
+})
+
+router.get('/cancel/get', function (req, res) {
+  res.json({
+    msg: `hello world`
+  })
+})
+
+router.get('/more/get', function (req, res) {
+  res.set(cors);
+  res.json({
+    msg: `hello world`
+  })
+})
+
+router.post('/more/upload', function(req, res) {
+  console.log(req.body, req.files)
+  res.end('upload success!')
+})
+
 
 app.use(router)
 
 
 app.use(webpackHotMiddleware(compiler))
 
-app.use(express.static(__dirname))
+app.use(express.static(__dirname, {
+  setHeaders(res) {
+    res.cookie('XSRF-TOKEN-D', '1234abc')
+  }
+}))
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))

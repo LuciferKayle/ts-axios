@@ -1,10 +1,11 @@
 import { AxiosPromise, AxiosRequestConfig, AxiosResponse } from '../types'
 import xhr from '../xhr'
-import { buildURL } from '../helpers/url'
+import { buildURL, isAbsolute, combineURL } from '../helpers/url'
 import { processHeaders, flattenHeaders } from '../helpers/header'
 import transform from './transform'
 
 export default function dispatchRequest(config: AxiosRequestConfig): AxiosPromise {
+  throwIfCancellationRequested(config)
   processConfig(config)
   return xhr(config).then(res => {
     return transformResponseData(res)
@@ -18,9 +19,12 @@ function processConfig(config: AxiosRequestConfig) {
   config.headers = flattenHeaders(config.headers, config.method!)
 }
 
-function transformURL(config: AxiosRequestConfig) {
-  const { url, params } = config
-  return buildURL(url!, params)
+export function transformURL(config: AxiosRequestConfig) {
+  let { url, params, paramsSerializer, baseURL } = config
+  if (baseURL && !isAbsolute(url!)) {
+    url = combineURL(baseURL, url)
+  }
+  return buildURL(url!, params, paramsSerializer)
 }
 
 function transformHeaders(config: AxiosRequestConfig) {
@@ -31,4 +35,11 @@ function transformHeaders(config: AxiosRequestConfig) {
 function transformResponseData(res: AxiosResponse): AxiosResponse {
   res.data = transform(res.data, res.headers, res.config.transformResponse)
   return res
+}
+
+// 重复发送取消请求抛出异常
+function throwIfCancellationRequested(config: AxiosRequestConfig) {
+  if (config.cancelToken) {
+    config.cancelToken.throwIfRequested()
+  }
 }

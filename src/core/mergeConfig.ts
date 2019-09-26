@@ -51,7 +51,7 @@ export default function mergeConfig(
   }
 
   // 深度合并策略
-  const stratDeepMerge = ['headers']
+  const stratDeepMerge = ['headers', 'auth']
   stratDeepMerge.forEach(key => {
     strats[key] = deepMergeStrat
   })
