@@ -60,9 +60,9 @@ export function buildURL(url: string, params?: any, paramsSerializer?: (params: 
     if (markIndex > -1) {
       url = url.slice(0, markIndex)
     }
-  }
 
-  url += (url.indexOf('?') === -1 ? '?' : '&') + serializaParams
+    url += (url.indexOf('?') === -1 ? '?' : '&') + serializaParams
+  }
 
   return url
 }
@@ -90,10 +90,10 @@ export function isURLSameOrigin(requestURL: string): boolean {
 }
 
 // 默认相对路径拼接
-export function isAbsolute(url: string): boolean {
+export function isAbsoluteURL(url: string): boolean {
   return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url)
 }
 
 export function combineURL(baseURL: string, relativeURL?: string): string {
-  return relativeURL ? baseURL.replace(/\+$/, '') + '/' + relativeURL.replace(/^\/+/, '') : baseURL
+  return relativeURL ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '') : baseURL
 }

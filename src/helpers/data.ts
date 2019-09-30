@@ -9,7 +9,6 @@ export function transformRequest(data: any): any {
 
 export function transformResponse(data: any): any {
   if (typeof data === 'string') {
-    console.log(typeof data)
     try {
       data = JSON.parse(data)
     } catch (err) {
